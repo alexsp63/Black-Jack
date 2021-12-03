@@ -15,8 +15,8 @@ module DealCards
       end
       new_cards = Card.aviable_cards.sample(n)
       new_cards.each do |card|
-      @cards.push(card)
-      card.owner = self
+        @cards.push(card)
+        card.owner = self
       end
     end
   end
