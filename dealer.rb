@@ -1,11 +1,11 @@
-class Dealer
-  attr_reader :cards
+# frozen_string_literal: true
 
-  def initialize
-    @balance = 90
-  end
+require_relative 'modules/deal_cards'
+
+class Dealer
+  include DealCards
 
   def show_no_cards
-    @cards.each { |card| print "* "}
+    @cards.each { |_card| print "*\t" }
   end
 end
