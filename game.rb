@@ -3,12 +3,11 @@
 require_relative 'imports'
 
 class Game
-
   def initialize(user, dealer)
     @interface = Interface.new
     @user = user
     @dealer = dealer
-    VALUES.each { |value| SUITS.each { |suit| Card.new(value, suit) } }
+    @desk = Desk.new
     @payment = 10
   end
 
@@ -19,7 +18,7 @@ class Game
     @players.each do |player|
       player.pay_money(@payment)
       @bank += @payment
-      player.give_cards
+      @desk.give_cards(player.hand)
     end
     step = 0
     loop do
@@ -38,44 +37,45 @@ class Game
 
   private
 
-  VALUES = %w[2 3 4 5 6 7 8 9 J Q K A].freeze
-  SUITS = ["\u2660", "\u2665", "\u2666", "\u2663"].freeze
-
   def users_move
-    case @interface.user_input(@user.cards.size == 2).to_i
-    when 1
-      @user.cards.size == 3 && @dealer.cards.size == 3
+    hand = @user.hand
+    case @interface.user_input(hand.cards.size == 2).to_i
+    # when 1
+    #   при скипе ничего не происходит
     when 2
-      true
+      return true
     when 3
-      @user.give_cards
-      @user.cards.size == 3 && @dealer.cards.size == 3
+      @desk.give_cards(hand)
     end
+    hand.cards.size == 3 && @dealer.hand.cards.size == 3
   end
 
   def dealers_move
-    if @dealer.points < 17
-      @dealer.give_cards # если менее 17 очков, добавляет карту
+    hand = @dealer.hand
+    if hand.points < 17
+      @desk.give_cards(hand) # если менее 17 очков, добавляет карту
       @interface.dealer_progress('DEALER ADDED A CARD')
     else
       @interface.dealer_progress('DEALER SKIPPED')
     end
-    @user.cards.size == 3 && @dealer.cards.size == 3
+    @user.hand.cards.size == 3 && hand.cards.size == 3
   end
 
   def show_game_end
+    user_hand = @user.hand
+    dealer_hand = @dealer.hand
     @interface.show_the_board(true, @bank, @dealer, @user)
-    if @user.points == @dealer.points
+    if dealer_hand.points == user_hand.points
       @interface.game_result('DROW')
       @players.each { |player| player.balance += (@bank / 2) }
-    elsif (@user.points > @dealer.points && @user.points <= 21) || (@user.points < @dealer.points && @dealer.points > 21)
+    elsif (user_hand.points > dealer_hand.points && user_hand.points <= 21) || (user_hand.points < dealer_hand.points && dealer_hand.points > 21)
       @interface.game_result("#{@user.name.capitalize} WON")
       @user.balance += @bank
-    elsif (@user.points > @dealer.points && @user.points > 21) || (@user.points < @dealer.points && @dealer.points <= 21)
+    elsif (user_hand.points > dealer_hand.points && user_hand.points > 21) || (user_hand.points < dealer_hand.points && dealer_hand.points <= 21)
       @interface.game_result('DEALER WON')
       @dealer.balance += @bank
     end
-    @user.reset_cards
-    @dealer.reset_cards
+    @desk.reset_cards(user_hand)
+    @desk.reset_cards(dealer_hand)
   end
 end

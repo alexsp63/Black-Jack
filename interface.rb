@@ -17,16 +17,16 @@ class Interface
     print_sep
     puts "\tBANK: #{bank}"
     puts "Dealer's balance: #{dealer.balance}"
-    puts "Dealer's total: #{dealer.points}" if show_dealers_points
+    puts "Dealer's total: #{dealer.hand.points}" if show_dealers_points
     puts "Dealer's cards"
-    dealer.show_no_cards unless show_dealers_points
-    dealer.show_cards if show_dealers_points
+    dealer.hand.cards.each { |_card| print "*\t" } unless show_dealers_points
+    dealer.hand.show_cards.each { |card| print "#{card}\t" } if show_dealers_points
     puts ''
     print_sep
     puts "Your balance: #{user.balance}"
-    puts "Your total: #{user.points}"
+    puts "Your total: #{user.hand.points}"
     puts 'Your cards'
-    user.cards.each(&:show)
+    user.hand.show_cards.each { |card| print "#{card}\t" }
     puts ''
   end
 

@@ -1,29 +1,10 @@
-# frozen_string_literal: true
+class Hand
+  # теперь тут хранятся карты игрока и идёт подсчёт очков игрока
 
-module DealCards
-  attr_reader :cards
-  attr_accessor :balance
+  attr_accessor :cards
 
-  def give_cards
-    @cards ||= []
-    if @cards.size == 2 || @cards.size.zero?
-      case @cards.size
-      when 2
-        n = 1
-      when 0
-        n = 2
-      end
-      new_cards = Card.aviable_cards.sample(n)
-      new_cards.each do |card|
-        @cards.push(card)
-        card.owner = self
-      end
-    end
-  end
-
-  def pay_money(payment)
-    @balance ||= 100
-    @balance -= payment
+  def initialize
+    @cards = []
   end
 
   def points
@@ -54,14 +35,9 @@ module DealCards
     points
   end
 
-  def reset_cards
-    @cards.each do |card|
-      Card.aviable_cards.push(card)
-    end
-    @cards = []
-  end
-
   def show_cards
-    @cards.each(&:show)
+    cards_to_show = []
+    @cards.each { |card| cards_to_show.push(card.show) }
+    return cards_to_show
   end
 end

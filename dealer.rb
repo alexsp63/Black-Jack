@@ -1,11 +1,15 @@
 # frozen_string_literal: true
 
-require_relative 'modules/deal_cards'
-
 class Dealer
-  include DealCards
+  attr_reader :hand
+  attr_accessor :balance
 
-  def show_no_cards
-    @cards.each { |_card| print "*\t" }
+  def initialize(hand)
+    @hand = hand
+  end
+
+  def pay_money(payment)
+    @balance ||= 100
+    @balance -= payment
   end
 end

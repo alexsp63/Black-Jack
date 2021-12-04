@@ -1,13 +1,10 @@
 # frozen_string_literal: true
 
-require_relative 'modules/deal_cards'
+class User < Dealer   # это такой же игрок, как и дилер, но с именем, поэтому наследую методы дилера
+  attr_reader :name
 
-class User
-  include DealCards
-
-  attr_reader :name, :balance
-
-  def initialize(name)
+  def initialize(name, hand)
     @name = name
+    @hand = hand
   end
 end
